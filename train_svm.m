@@ -4,7 +4,7 @@ close all
 % phenotype data for model training
 load data_train.mat X age sex
 
-% X: phenotypes matrix (nSubjects x number of phenotypes)
+% X: phenotype matrix (nSubjects x nPhenotypes)
 % age: chronological age of healthy individuals included in model training (nSubjects x 1 )
 % sex: female=0; male=1 (nSubjects x 1 )
 

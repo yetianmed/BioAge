@@ -4,7 +4,7 @@ close all
 % phenotype data in test
 load data_test.mat X age sex 
 
-% X: phenotypes matrix (nSubjects x number of phenotypes)
+% X: phenotype matrix (nSubjects x nPhenotypes)
 % age: chronological age of individuals with disease (nSubjects x 1 )
 % sex: female=0; male=1 (nSubjects x 1 )
 
