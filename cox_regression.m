@@ -3,16 +3,16 @@ fprintf('Cox proportional hazards regression...\n')
 load survival_data.mat x T censored
 
 %%% x: risk factors including chronological age, sex, organ age gaps,lifestyle factors, presence of
-%      diagnoses etc. 
+%      diagnoses etc.
 %      dimension: nSubjects x nFactors
-% censored: mortality status. 1=non-deceased; 0=deceased. 
+% censored: mortality status. 1=non-deceased; 0=deceased.
 %           dimension: nSubjects x 1
-% T: survival time 
+% T: survival time
 %    for deceased people, T=number of days between the date of death and
 %    the date of organ function assessment.
 %    for non-deceased people, T=number of days between the date of
 %    mortality ascertainment and the date of organ function assessment.
-  
+
 T=T/365; %convert from days to years to be consistent with the unit of age gap
 
 fprintf('Proportion of right-censored samples: %0.2f%%\n',sum(censored)/length(censored)*100);
@@ -34,7 +34,7 @@ auc=trapz(false_pos_rate,true_pos_rate);
 p=stats.p;
 ind_sig=(p<0.05/size(x,2)); % significant factors
 
-%%%% run bootstraps to estimate 95% CI
+%%% run bootstrappping to estimate 95% CI
 fprintf('Bootstrapping\n')
 N=size(x,1);
 nboot=100; % number of bootstraps
@@ -54,41 +54,40 @@ b_rnd_srt=sort(b_rnd,2);
 ci=exp([b_rnd_srt(:,5),b_rnd_srt(:,95)]);% 95% CI
 se=abs(ci-hazard_ratio);
 
-Figure=0;
-if Figure
-    % bar plot of hazard ratios for
-    hf=figure; hf.Color='w';
-    hb=bar(hazard_ratio,0.6,'r');alpha(0.5)
-    hb.FaceColor = 'flat';
-    % make bar white if not significant
-    for i=1:size(x,2)
-        if ind_sig(i)==0
-            hb.CData(i,:)=[1,1,1];
-        end
+%%% make some plots
+% bar plot of hazard ratios for
+hf=figure; hf.Color='w';
+hb=bar(hazard_ratio,0.6,'r');alpha(0.5)
+hb.FaceColor = 'flat';
+% make bar white if not significant
+for i=1:size(x,2)
+    if ind_sig(i)==0
+        hb.CData(i,:)=[1,1,1];
     end
-    hold on
-    % add CI
-    he=errorbar([1:length(se)],hazard_ratio,se(:,1),se(:,2),'.');
-    he.Color='k';
-    he.LineWidth=1;
-    ylabel('Hazard ratio');
-    ha=gca;
-    ha.YGrid='on';
-    
-    % effect size
-    hf=figure; hf.Color='w';
-    hb=bar(z,0.6,'b');
-    hb.FaceColor = 'flat';
-    hb.FaceAlpha=0.5;
-    % make bar white if not significant
-    for i=1:size(x,2)
-        if ind_sig(i)==0
-            hb.CData(i,:)=[1,1,1]; 
-        end
-    end
-    ylabel('z-score');
-    ha=gca;
-    ha.YGrid='on';
 end
+hold on
+% add CI
+he=errorbar([1:length(se)],hazard_ratio,se(:,1),se(:,2),'.');
+he.Color='k';
+he.LineWidth=1;
+ylabel('Hazard ratio');
+ha=gca;
+ha.YGrid='on';
+
+% effect size
+hf=figure; hf.Color='w';
+hb=bar(z,0.6,'b');
+hb.FaceColor = 'flat';
+hb.FaceAlpha=0.5;
+% make bar white if not significant
+for i=1:size(x,2)
+    if ind_sig(i)==0
+        hb.CData(i,:)=[1,1,1];
+    end
+end
+ylabel('z-score');
+ha=gca;
+ha.YGrid='on';
+
 
 
