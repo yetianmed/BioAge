@@ -54,13 +54,14 @@ b_rnd_srt=sort(b_rnd,2);
 ci=exp([b_rnd_srt(:,5),b_rnd_srt(:,95)]);% 95% CI
 se=abs(ci-hazard_ratio);
 
+Figure=0;
 if Figure
     % bar plot of hazard ratios for
     hf=figure; hf.Color='w';
     hb=bar(hazard_ratio,0.6,'r');alpha(0.5)
     hb.FaceColor = 'flat';
     % make bar white if not significant
-    for i=1:length(header(1:end-2))
+    for i=1:size(x,2)
         if ind_sig(i)==0
             hb.CData(i,:)=[1,1,1];
         end
@@ -80,7 +81,7 @@ if Figure
     hb.FaceColor = 'flat';
     hb.FaceAlpha=0.5;
     % make bar white if not significant
-    for i=1:length(header_new)
+    for i=1:size(x,2)
         if ind_sig(i)==0
             hb.CData(i,:)=[1,1,1]; 
         end
