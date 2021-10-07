@@ -1,23 +1,31 @@
+% This is an example script to show the analysis of cox regression where
+% age at assessement, sex and organ age gaps are included in the model. Other independent
+% variables such as diagnoses and lifestyle factors can be added.
+
 clear
 fprintf('Cox proportional hazards regression...\n')
-load data.mat x T censored
+load survival_data.mat age_at_assessment sex age_gap T censored
 
-%%% x: risk factors including chronological age at assessment, sex, organ age gaps,lifestyle factors, presence of
-%      diagnoses etc.
-%      dimension: nSubjects x nFactors
-% censored: mortality status. 1=non-deceased; 0=deceased.
+%%%% censored: mortality status. 1=non-deceased; 0=deceased.
 %           dimension: nSubjects x 1
-% T: survival time
-%    for deceased people, T=number of days between the date of death and
-%    the date of organ function assessment.
-%    for non-deceased people, T=number of days between the date of
-%    mortality ascertainment and the date of organ function assessment.
 
-T=T/365; %convert from days to years to be consistent with the unit of age gap
+%%%% T: Post-assessment survival time
+%       for deceased people, T=number of days between the date of death and
+%       the date of organ function assessment.
+%       for non-deceased people, T=number of days between the date of
+%       mortality ascertainment and the date of organ function assessment.
+
+% standardize age and age gap
+age_at_assessment=zscore(age_at_assessment); % nSubjects x 1
+age_gap=zscore(age_gap); % nSubjects x nOrgans
+
+%convert from days to years to be consistent with the unit of age gap
+T=T/365; 
+
+% contatenate all factors
+x=[age_at_assessment,sex,age_gap];% contatenate all factors
 
 fprintf('Proportion of right-censored samples: %0.2f%%\n',sum(censored)/length(censored)*100);
-
-% chronological age and age gap can be standardised before adding to the model
 [b,logl,H,stats]=coxphfit(x,T,'censoring',censored);
 y=x*b;
 hazard_ratio=exp(b);% hazard ratio for each factor
@@ -59,6 +67,7 @@ se=abs(ci-hazard_ratio);
 hf=figure; hf.Color='w';
 hb=bar(hazard_ratio,0.6,'r');alpha(0.5)
 hb.FaceColor = 'flat';
+
 % make bar white if not significant
 for i=1:size(x,2)
     if ind_sig(i)==0
@@ -66,6 +75,7 @@ for i=1:size(x,2)
     end
 end
 hold on
+
 % add CI
 he=errorbar([1:length(se)],hazard_ratio,se(:,1),se(:,2),'.');
 he.Color='k';
@@ -79,6 +89,7 @@ hf=figure; hf.Color='w';
 hb=bar(z,0.6,'b');
 hb.FaceColor = 'flat';
 hb.FaceAlpha=0.5;
+
 % make bar white if not significant
 for i=1:size(x,2)
     if ind_sig(i)==0
