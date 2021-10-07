@@ -1,8 +1,8 @@
 clear
 fprintf('Cox proportional hazards regression...\n')
-load survival_data.mat x T censored
+load data.mat x T censored
 
-%%% x: risk factors including chronological age, sex, organ age gaps,lifestyle factors, presence of
+%%% x: risk factors including chronological age at assessment, sex, organ age gaps,lifestyle factors, presence of
 %      diagnoses etc.
 %      dimension: nSubjects x nFactors
 % censored: mortality status. 1=non-deceased; 0=deceased.
